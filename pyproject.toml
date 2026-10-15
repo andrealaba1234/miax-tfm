@@ -1,0 +1,9 @@
+[project]
+name = "tfm-miax"
+version = "0.1.0"
+description = "TFM: limpieza y análisis de los índices Nasdaq 100 y S&P 500 point-in-time"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

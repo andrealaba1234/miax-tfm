@@ -1,12 +1,12 @@
 # --- Datos ---------------------------------------------------------------
-# Dataset original del profesor: datos con licencia (Norgate) y archivos de más
-# de 100 MB (límite de GitHub). Cada persona debe tener su copia local.
+# Datasets originales: datos con licencia (Norgate) y archivos de más de 100 MB
+# (límite de GitHub). Cada persona debe tener su copia local.
 NASDAQ100_PIT_*/
+sp500_history.parquet
 
-# Salidas regenerables con notebooks/01_limpieza_datos.ipynb (~100 MB).
-# Se versiona solo el informe, que documenta parámetros, hashes y resultados.
-datos_limpios/*
-!datos_limpios/informe_limpieza.json
+# Salidas regenerables con los notebooks (datos_limpios/<indice>/*.parquet, 100-165 MB).
+# Se versiona solo informe_limpieza.json de cada índice (parámetros, hashes y resultados):
+# los .parquet ya quedan excluidos por la regla *.parquet de abajo.
 
 # Por si acaso: cualquier archivo de datos pesado fuera de esas carpetas
 *.parquet
@@ -14,6 +14,7 @@ datos_limpios/*
 
 # --- Python / Jupyter ----------------------------------------------------
 __pycache__/
+.pytest_cache/
 *.py[cod]
 .ipynb_checkpoints/
 .venv/

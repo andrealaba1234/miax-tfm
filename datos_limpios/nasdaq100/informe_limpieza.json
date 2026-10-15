@@ -1,6 +1,7 @@
 {
-  "notebook": "notebooks/01_limpieza_datos.ipynb",
-  "ejecutado_utc": "2026-10-15T17:28:48+00:00",
+  "notebook": "notebooks/01_limpieza_nasdaq100.ipynb",
+  "codigo_comun": "src/limpieza_pit",
+  "ejecutado_utc": "2026-10-15T20:14:17+00:00",
   "entorno": {
     "python": "3.11.9",
     "pandas": "3.0.0",
@@ -160,10 +161,10 @@
     "salida_por_fin_cotizacion": "Última sesión de un periodo que termina porque termina la serie de precios",
     "ohlc_incoherente": "low/high incoherentes con open/close en filas con precio real"
   },
+  "duracion_segundos": 14.9,
   "salida": {
     "cobertura_anual.parquet": "e8dd2c79628a9f66d77843233573b66d617f295557f192ffe46511f97eec6d7c",
     "log_decisiones.parquet": "1f6f8b140a887bd1dbfba58617bb8626b6c252728ef41cfb662125f642acea0a",
     "panel_pit_limpio.parquet": "12f7e0c4288a8308874eb3e7d6fd2d6558da0da12a0eb7f4da56b74376234370"
-  },
-  "duracion_segundos": 13.2
+  }
 }

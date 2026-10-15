@@ -1,0 +1,144 @@
+{
+  "notebook": "notebooks/02_limpieza_sp500.ipynb",
+  "codigo_comun": "src/limpieza_pit",
+  "ejecutado_utc": "2026-10-15T20:13:37+00:00",
+  "entorno": {
+    "python": "3.11.9",
+    "pandas": "3.0.0",
+    "pyarrow": "23.0.1",
+    "numpy": "2.4.6"
+  },
+  "parametros": {
+    "FFILL_MAX_SESIONES": 5,
+    "UMBRAL_HUECOS_VALOR": null,
+    "UMBRAL_RET_ANOMALO": 0.5,
+    "UMBRAL_DIF_AJUSTE": 0.2,
+    "TOL_SPLIT": 0.02,
+    "TOL_OHLC": 1e-06,
+    "RACHA_CONGELADO": 5,
+    "CORTES_TEST_LOOKAHEAD": [
+      "1998-08-28",
+      "2006-03-07",
+      "2023-05-01"
+    ]
+  },
+  "decisiones": {
+    "pertenencia": "periodos reconstruidos desde in_sp500; sesiones sin fila dentro de un periodo = hueco de precio",
+    "pertenencia_ambigua": "5 tramos (31 sesiones) entre un 1 y un 0: fuera del panel",
+    "precision": "float32 convertido a float64 antes de calcular",
+    "precio_para_retornos": "close (retorno total); unadjusted_close solo para validar splits",
+    "huecos_cortos": "ffill causal hasta 5 sesiones, marcado en precio_imputado",
+    "valores_con_muchos_huecos": "opción B: no se descarta ningún valor completo",
+    "sector_industria": "clasificación actual (snapshot), no histórica: posible look-ahead si se usa como histórica",
+    "huecos_nasdaq_recuperables": "hallazgo documentado; no aplicado (pendiente de confirmar el origen del archivo)",
+    "test_lookahead": "filas idénticas con datos truncados en ['1998-08-28', '2006-03-07', '2023-05-01']; control negativo: interpolación"
+  },
+  "entrada": {
+    "archivo": "sp500_history.parquet",
+    "sha256": "d02e13672f558469d8345ff4dfe0067c460c1729d8b7538d295c3940f35fdecd"
+  },
+  "resultado": {
+    "antes_despues": {
+      "filas del panel": {
+        "antes": 4555058,
+        "despues": 4555058,
+        "cambio": 0
+      },
+      "filas con precio utilizable": {
+        "antes": 4555024,
+        "despues": 4555058,
+        "cambio": 34
+      },
+      "filas sin precio utilizable": {
+        "antes": 34,
+        "despues": 0,
+        "cambio": -34
+      },
+      "valores en el universo": {
+        "antes": 1289,
+        "despues": 1289,
+        "cambio": 0
+      }
+    },
+    "decisiones": {
+      "4.2 precio imputado (ffill causal)": {
+        "filas": 34,
+        "valores": 23
+      },
+      "4.3 excluible: prolongado sin imputar": {
+        "filas": 0,
+        "valores": 0
+      },
+      "4.3 excluible: sin precio previo": {
+        "filas": 0,
+        "valores": 0
+      },
+      "4.4 valor descartado (opción A)": {
+        "filas": 0,
+        "valores": 0
+      },
+      "4.5 retorno acumulado tras hueco corto": {
+        "filas": 32,
+        "valores": 24
+      },
+      "4.5 retorno NaN tras hueco largo": {
+        "filas": 0,
+        "valores": 0
+      },
+      "5.2 OHLC incoherente": {
+        "filas": 0,
+        "valores": 0
+      },
+      "5.3 retorno anómalo": {
+        "filas": 114,
+        "valores": 73
+      },
+      "5.3 posible split no ajustado": {
+        "filas": 4,
+        "valores": 4
+      },
+      "5.3 operación corporativa ajustada (info)": {
+        "filas": 1103,
+        "valores": 588
+      },
+      "5.4 precio congelado": {
+        "filas": 1419,
+        "valores": 282
+      },
+      "5.5 salida por fin de cotización (info)": {
+        "filas": 384,
+        "valores": 384
+      }
+    },
+    "periodos": 1321,
+    "huecos_nasdaq_con_precio_en_sp500": 21996
+  },
+  "columnas_nuevas": {
+    "membership_period": "Número de periodo de pertenencia del valor (reconstruido a partir de in_sp500)",
+    "has_price": "True si el archivo original tiene fila (precio real) ese día",
+    "precio_imputado": "True si el precio se ha rellenado con el último cierre real (ffill causal)",
+    "sesiones_desde_ultimo_precio": "Sesiones desde el último precio real estrictamente anterior",
+    "fecha_ultimo_precio_real": "Fecha del último precio real estrictamente anterior",
+    "tipo_hueco": "ninguno | imputado_ffill | prolongado_sin_imputar | sin_precio_previo",
+    "precio_utilizable": "has_price | precio_imputado",
+    "excluible": "True si la fila no tiene precio utilizable (no se borra: sigue siendo miembro)",
+    "valor_descartado": "True si el valor se descarta entero (opción A; False con la opción B elegida)",
+    "ret_tr_limpio": "Retorno diario sobre close (retorno total); NaN si no es fiable",
+    "ret_none_limpio": "Ídem sobre unadjusted_close (solo para validar splits)",
+    "motivo_ret": "normal | imputado_cero | acumulado_tras_hueco_corto | tras_hueco_largo | sin_precio | primer_precio",
+    "ret_anomalo": "|ret_tr_limpio| > 0.5",
+    "accion_corporativa_ajustada": "El precio sin ajustar salta y el ajustado no (split u operación corporativa bien ajustada)",
+    "posible_split_no_ajustado": "Retorno anómalo con factor ~entero en ambas series: revisar",
+    "sesiones_mismo_cierre": "Sesiones seguidas, hasta ese día, con el mismo unadjusted_close",
+    "precio_congelado": "sesiones_mismo_cierre >= 5 (racha contada solo hacia atrás)",
+    "salida_por_fin_cotizacion": "Última sesión de un periodo que termina porque termina la serie de precios",
+    "ohlc_incoherente": "low/high incoherentes con open/close en filas con precio real"
+  },
+  "duracion_segundos": 71.2,
+  "salida": {
+    "cobertura_anual.parquet": "43c499276c573a416cfd2fdd90c9e16611c06bc455d6bd01d8c0bfa2f322a294",
+    "log_decisiones.parquet": "d9ee5900ee2face2535ec6e03ed528ea57770dc3a53f3e728b8c9a863c74366d",
+    "panel_pit_limpio.parquet": "d970a73ef28645cb5a9d5318b41388820e59cf87f8764f3e5c5c9a87222ceb31",
+    "pertenencia_periodos.parquet": "6c1ef170f445fe912a59e288ecdeb807c987ded1a0b3bf61b4b116f21f97f331"
+  }
+}
