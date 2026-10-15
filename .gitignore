@@ -1,0 +1,26 @@
+# --- Datos ---------------------------------------------------------------
+# Dataset original del profesor: datos con licencia (Norgate) y archivos de más
+# de 100 MB (límite de GitHub). Cada persona debe tener su copia local.
+NASDAQ100_PIT_*/
+
+# Salidas regenerables con notebooks/01_limpieza_datos.ipynb (~100 MB).
+# Se versiona solo el informe, que documenta parámetros, hashes y resultados.
+datos_limpios/*
+!datos_limpios/informe_limpieza.json
+
+# Por si acaso: cualquier archivo de datos pesado fuera de esas carpetas
+*.parquet
+*.csv.gz
+
+# --- Python / Jupyter ----------------------------------------------------
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# --- Sistema y editores --------------------------------------------------
+.DS_Store
+.vscode/
+.idea/

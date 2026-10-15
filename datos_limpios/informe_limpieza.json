@@ -1,0 +1,169 @@
+{
+  "notebook": "notebooks/01_limpieza_datos.ipynb",
+  "ejecutado_utc": "2026-10-15T17:28:48+00:00",
+  "entorno": {
+    "python": "3.11.9",
+    "pandas": "3.0.0",
+    "pyarrow": "23.0.1",
+    "numpy": "2.4.6"
+  },
+  "parametros": {
+    "FFILL_MAX_SESIONES": 5,
+    "UMBRAL_HUECOS_VALOR": null,
+    "UMBRAL_RET_ANOMALO": 0.5,
+    "UMBRAL_DIF_AJUSTE": 0.2,
+    "TOL_SPLIT": 0.02,
+    "TOL_OHLC": 1e-06,
+    "RACHA_CONGELADO": 5,
+    "CORTES_TEST_LOOKAHEAD": [
+      "2002-06-27",
+      "2014-01-06",
+      "2018-01-04"
+    ]
+  },
+  "decisiones": {
+    "precio_para_retornos": "close_totalreturn (close_none solo para validar splits)",
+    "huecos_cortos": "ffill causal hasta 5 sesiones, marcado en precio_imputado",
+    "huecos_largos": "se mantienen las filas sin precio, marcadas como excluible (no se inventan precios)",
+    "valores_con_muchos_huecos": "opción B: no se descarta ningún valor completo (evitar sesgo de supervivencia)",
+    "retorno_tras_hueco_largo": "NaN (motivo_ret = tras_hueco_largo)",
+    "anomalias": "se marcan (ret_anomalo, posible_split_no_ajustado, ohlc_incoherente, precio_congelado); no se borran",
+    "salidas_por_fin_cotizacion": "sin retorno de salida sintético; marcadas en salida_por_fin_cotizacion",
+    "test_lookahead": "filas idénticas con datos truncados en ['2002-06-27', '2014-01-06', '2018-01-04']"
+  },
+  "entrada": {
+    "carpeta": "NASDAQ100_PIT_1993-10-01_2026-05-29_CON_HUECOS",
+    "sha256": {
+      "calendario_y_cobertura.parquet": "6afa5d556cba4b561b08db03dab1f31fb41971858af18c41e12d8fec2bfa9929",
+      "eventos_indice.parquet": "ba0bcd41670ab4d96de78c9277beec5eb3930b85d1325fedc3d0facd799f2acd",
+      "indices_referencia.parquet": "638c4183a74b41816708390ce07f9e5811d1de97eb81137138ee1c354239c1d8",
+      "miembros_sin_precio.parquet": "139c37d0fe4c91024da6d94f05013b1bd44d9a91e91d2bb85d826953f7ae7ca4",
+      "panel_pit_diario.parquet": "027233ea9e4d118e1a208e4230b5221d7ce85c51ff1649ee932cba2101d4dc89",
+      "pertenencia_diaria.parquet": "02377314dec98b7f8c4c7a4c4ee386998df0aac35efff94139c62f0b790d1222",
+      "pertenencia_periodos.parquet": "93723986fe9399a3ea8a906b2df45a3d4b77503e2807dfa2ddbb5ca2851e75aa",
+      "pertenencia_rangos_fuente.parquet": "04bbd0b3bb4a5c8d014ca44fa47fd3ed33a9ebbd0725d8c027edcbfea668cacf",
+      "precios_diarios.parquet": "3470c30c89204dc751457fddb5ed35f8b17f34495b85e86f9414d63007e8bb36",
+      "resumen_huecos_por_valor.parquet": "b9564aca29b0feb4d9949f122574fb3dff68354d44c0ddc682323d5456edc240",
+      "tramos_sin_precio.parquet": "7aa85e53569fea5c1b8611ae732d0c1e0889a0ba7f7d50688ec1d8571b2a0951",
+      "universo.parquet": "f6ba9f18466f878fa1d9b8fc8e1efc17401bc1062e572c57b77629ea94d109b4"
+    }
+  },
+  "resultado": {
+    "antes_despues": {
+      "filas del panel": {
+        "antes": 830759,
+        "despues": 830759,
+        "cambio": 0
+      },
+      "filas con precio utilizable": {
+        "antes": 805784,
+        "despues": 805830,
+        "cambio": 46
+      },
+      "filas sin precio utilizable": {
+        "antes": 24975,
+        "despues": 24929,
+        "cambio": -46
+      },
+      "filas con retorno diario válido": {
+        "antes": 805755,
+        "despues": 805819,
+        "cambio": 64
+      },
+      "valores en el universo": {
+        "antes": 473,
+        "despues": 473,
+        "cambio": 0
+      },
+      "valores con alguna fila sin precio": {
+        "antes": 28,
+        "despues": 16,
+        "cambio": -12
+      }
+    },
+    "decisiones": {
+      "4.2 precio imputado (ffill causal)": {
+        "filas": 46,
+        "valores": 16
+      },
+      "4.3 excluible: prolongado sin imputar": {
+        "filas": 10317,
+        "valores": 8
+      },
+      "4.3 excluible: sin precio previo": {
+        "filas": 14612,
+        "valores": 9
+      },
+      "4.4 valor descartado (opción A)": {
+        "filas": 0,
+        "valores": 0
+      },
+      "4.5 retorno acumulado tras hueco corto": {
+        "filas": 18,
+        "valores": 12
+      },
+      "4.5 retorno NaN tras hueco largo": {
+        "filas": 5,
+        "valores": 4
+      },
+      "5.2 OHLC incoherente": {
+        "filas": 0,
+        "valores": 0
+      },
+      "5.3 retorno anómalo": {
+        "filas": 32,
+        "valores": 25
+      },
+      "5.3 posible split no ajustado": {
+        "filas": 2,
+        "valores": 2
+      },
+      "5.3 operación corporativa ajustada (info)": {
+        "filas": 358,
+        "valores": 182
+      },
+      "5.4 precio congelado": {
+        "filas": 179,
+        "valores": 33
+      },
+      "5.6 salida por fin de cotización (info)": {
+        "filas": 48,
+        "valores": 48
+      }
+    },
+    "correlacion_ew_vs_ndx": {
+      "corr_NDX_antes": 0.9644,
+      "corr_NDX_despues": 0.9643,
+      "corr_NDXTR_despues": 0.9693,
+      "miembros_con_ret_antes": 98.0237,
+      "miembros_con_ret_despues": 98.0315
+    }
+  },
+  "columnas_nuevas": {
+    "precio_imputado": "True si el precio se ha rellenado con el último cierre real (ffill causal, sección 4.2)",
+    "sesiones_desde_ultimo_precio": "Sesiones $NDX desde el último precio real estrictamente anterior",
+    "fecha_ultimo_precio_real": "Fecha del último precio real estrictamente anterior",
+    "tipo_hueco": "ninguno | imputado_ffill | prolongado_sin_imputar | sin_precio_previo",
+    "evaluacion_fuente": "Evaluación del dataset original para el valor (solo filas sin precio real)",
+    "precio_utilizable": "has_price | precio_imputado",
+    "excluible": "True si la fila no tiene precio utilizable (no se borra: sigue siendo miembro)",
+    "valor_descartado": "True si el valor se descarta entero (opción A; False con la opción B elegida)",
+    "ret_tr_limpio": "Retorno diario sobre close_totalreturn (sección 4.5); NaN si no es fiable",
+    "ret_none_limpio": "Ídem sobre close_none (solo para validar splits)",
+    "motivo_ret": "normal | imputado_cero | acumulado_tras_hueco_corto | tras_hueco_largo | sin_precio | primer_precio",
+    "ret_anomalo": "|ret_tr_limpio| > 0.5",
+    "accion_corporativa_ajustada": "El precio sin ajustar salta y el ajustado no (split u operación corporativa bien ajustada)",
+    "posible_split_no_ajustado": "Retorno anómalo con factor ~entero en ambas series: revisar",
+    "capital_event_sesion_previa": "capital_event de la fila de pertenencia anterior del valor (Norgate lo marca la víspera)",
+    "sesiones_mismo_cierre": "Sesiones seguidas, hasta ese día, con el mismo close_none (solo filas con precio real)",
+    "precio_congelado": "sesiones_mismo_cierre >= 5 (racha contada solo hacia atrás)",
+    "salida_por_fin_cotizacion": "Última sesión de un periodo que termina porque termina la serie de precios",
+    "ohlc_incoherente": "low/high incoherentes con open/close en filas con precio real"
+  },
+  "salida": {
+    "cobertura_anual.parquet": "e8dd2c79628a9f66d77843233573b66d617f295557f192ffe46511f97eec6d7c",
+    "log_decisiones.parquet": "1f6f8b140a887bd1dbfba58617bb8626b6c252728ef41cfb662125f642acea0a",
+    "panel_pit_limpio.parquet": "12f7e0c4288a8308874eb3e7d6fd2d6558da0da12a0eb7f4da56b74376234370"
+  },
+  "duracion_segundos": 13.2
+}
